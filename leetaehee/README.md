@@ -1,53 +1,51 @@
-# LeetCode - 19. Remove Nth Node From End of List
+# LeetCode - 33. Search in Rotated Sorted Array
 
-https://leetcode.com/problems/remove-nth-node-from-end-of-list/
-  
-노드 리스트의 뒤에서 N번째 노드를 삭제하기
+https://leetcode.com/problems/search-in-rotated-sorted-array/
+
+임의의 위치에서 순서가 뒤바뀐 배열에서 원소찾기
 
 ```Java
-/**
- * Definition for singly-linked list.
- * public class ListNode {
- *     int val;
- *     ListNode next;
- *     ListNode() {}
- *     ListNode(int val) { this.val = val; }
- *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
- * }
- */
 class Solution {
-    public ListNode removeNthFromEnd(ListNode head, int n) {
+    public int search(int[] nums, int target) {
+        int len = nums.length;
+        int start = 0, end = len-1, mid = 0;
         
-        ListNode a, b;
-        a = head;   //앞서가는 포인터
-        b = head;   //뒤에 있는 포인터
-        int pos = 0;
-
-        //현재 위치가 주어진 n보다 작다면 계속 다음칸으로 넘어간다
-        while(true) {
-            if(pos < n) {
-                a = a.next;
-                pos++;
+        while(start <= end) {
+            //찾고자하는 원소가 중간값이라면 중간 위치 리턴
+            mid = (start + end) / 2;
+            if(nums[mid] == target)
+                return mid;
+            
+            //왼쪽이 정렬된 상태
+            if(nums[start] <= nums[mid]) {
+                //왼쪽 부분으로 검색 범위를 줄임
+                if(nums[start] <= target && target < nums[mid]) {
+                    end = mid-1;
+                }
+                //검색 범위를 오른쪽으로 변경함
+                else {
+                    start = mid+1;
+                }
             }
-            else
-                break;
+            //오른쪽이 정렬된 상태
+            else {
+                //오른쪽으로 검색 범위를 줄임
+                if(nums[mid] < target && target <= nums[end]) {
+                    start = mid+1;
+                }
+                //검색 범위를 왼쪽으로 변경함
+                else {
+                    end = mid-1;
+                }
+            }
         }
         
-        if(a == null)
-            return head.next;
+        return -1;
         
-        while(a.next != null) {
-            a = a.next;
-            b = b.next;
-        }
-        
-        b.next = b.next.next;
-        return head;
     }
 }
-
 ```
 
-시간복잡도 : O(N)
-모든 노드를 1회만 탐색하기 때문에 O(N) 안에 끝낼 수 있다.  
+시간복잡도 : O(log N)
+이진탐색 기법을 기반으로 배열을 탐색하여 log N의 시간복잡도를 가진다!
 <br />
