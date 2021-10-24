@@ -1,152 +1,49 @@
 # Problems
 
-https://leetcode.com/problems/sort-colors/
+https://leetcode.com/problems/merge-sorted-array/
 
 ``` C#
-public class Solution {
-    public void SortColors(int[] nums) {
-         new Quick().Sort(nums);
-    }
+public class Solution
+{
+	public void Merge(int[] nums1, int m, int[] nums2, int n)
+	{
+        //전체 뒷쪽부터 채워넣기위한 전체 인덱스
+		var currentIndex = nums1.Length - 1;
+
+        //각 배열별 인덱스로 사용하기위해 1 빼기
+		m--;
+		n--;
+
+		while (m >= 0 && n >= 0)
+		{
+			if (nums1[m] > nums2[n])
+			{
+				nums1[currentIndex--] = nums1[m--];
+			}
+			else
+			{
+				nums1[currentIndex--] = nums2[n--];
+			}
+		}
+
+        //남아있는 것이 있다면 다 넣고 끝내버리기
+		if (m >= 0)
+		{
+			while(currentIndex > -1)
+			{
+				nums1[currentIndex--] = nums1[m--];
+			}
+			return;
+		}
+
+		if(n >= 0)
+		{
+			while (currentIndex > -1)
+			{
+				nums1[currentIndex--] = nums2[n--];
+			}
+			return;
+		}
+	}
 }
-
-   public class Sorter
-    {
-        protected void Write(int[] array)
-        {
-            for (int i = 0; i < array.Length; i++)
-            {
-                Console.Write(array[i] + "  ");
-            }
-            Console.WriteLine();
-        }
-
-        protected void Swap(int[] array, int index1, int index2)
-        {
-            int tmp = array[index1];
-
-            array[index1] = array[index2];
-
-            array[index2] = tmp;
-        }
-    }
-    interface ISorter
-        
-    {
-        void Sort(int[] array);
-    }
-
-    class Quick : Sorter, ISorter
-    {
-        Random random = new Random();
-
-        public void Sort(int[] array)
-        {
-            //Write(array);
-
-            int leftIndex = 0;
-            int rightIndex = array.Length - 1;
-
-            QuickSort(array, leftIndex, rightIndex);
-
-            //Write(array);
-        }
-
-        void SwapAndSetPivot(int[] array, int index, ref int pivot)
-        {
-            if (index > pivot)
-            {
-                if (array[index] <= array[pivot])
-                {
-                    Swap(array, index, pivot);
-
-                    pivot = index;
-                }
-            }
-            else if (index < pivot)
-            {
-                if (array[index] >= array[pivot])
-                {
-                    Swap(array, index, pivot);
-
-                    pivot = index;
-                }
-            }
-        }
-
-        private void QuickSort(int[] array, int leftIndex, int rightIndex)
-        {
-            int gap = rightIndex - leftIndex + 1;
-
-            if (gap == 2)
-            {
-                if (array[leftIndex] > array[rightIndex])
-                {
-                    Swap(array, leftIndex, rightIndex);
-                }
-
-                return;
-            }
-            else if (gap > 1)
-            {
-                //make a pivot number
-                int pivot = random.Next(leftIndex, rightIndex);
-
-                Swap(array, pivot, rightIndex);
-
-                pivot = rightIndex;
-
-                int left = leftIndex;
-                int right = rightIndex - 1;
-
-                while (true)
-                {
-                    while (array[left] <= array[pivot] && left < right)
-                    {
-                        left++;
-                    }
-
-                    if (left == right)
-                    {
-                        if (array[left] >= array[pivot])
-                        {
-                            Swap(array, left, pivot);
-                        }
-
-                        pivot = left;
-                        //left
-                        QuickSort(array, leftIndex, pivot);
-                        //right
-                        QuickSort(array, pivot + 1, rightIndex);
-
-                        break;
-                    }
-
-                    while (array[right] >= array[pivot] && left < right)
-                    {
-                        right--;
-                    }
-
-                    if (left == right)
-                    {
-                        if (array[right] > array[pivot])
-                        {
-                            Swap(array, right, pivot);
-                        }
-
-
-                        pivot = right;
-
-                        //left
-                        QuickSort(array, leftIndex, pivot);
-                        //right
-                        QuickSort(array, pivot + 1, rightIndex);
-
-                        break;
-                    }
-
-                    Swap(array, left, right);
-                }
-            }
-        }
-    }
 ```
