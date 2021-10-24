@@ -2,7 +2,7 @@
 
 https://leetcode.com/problems/merge-sorted-array/
   
-오름차순으로 정렬되어 있는 두 개의 배열을 병합정렬하기
+오름차순으로 정렬되어 있는 두 개의 배열을 병합정렬하기.
 
 ```Java
 
