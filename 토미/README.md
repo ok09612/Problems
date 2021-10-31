@@ -1,49 +1,89 @@
 # Problems
 
-https://leetcode.com/problems/merge-sorted-array/
+https://leetcode.com/problems/decode-string/
 
 ``` C#
-public class Solution
-{
-	public void Merge(int[] nums1, int m, int[] nums2, int n)
-	{
-        //전체 뒷쪽부터 채워넣기위한 전체 인덱스
-		var currentIndex = nums1.Length - 1;
+  public class Solution
+    {
+        public string DecodeString(string s)
+        {
+            var result = new StringBuilder();
 
-        //각 배열별 인덱스로 사용하기위해 1 빼기
-		m--;
-		n--;
+            var i = 0;
 
-		while (m >= 0 && n >= 0)
-		{
-			if (nums1[m] > nums2[n])
-			{
-				nums1[currentIndex--] = nums1[m--];
-			}
-			else
-			{
-				nums1[currentIndex--] = nums2[n--];
-			}
-		}
+            while (i < s.Length)
+            {
+                var value = (int)s[i];
 
-        //남아있는 것이 있다면 다 넣고 끝내버리기
-		if (m >= 0)
-		{
-			while(currentIndex > -1)
-			{
-				nums1[currentIndex--] = nums1[m--];
-			}
-			return;
-		}
+                i++;
 
-		if(n >= 0)
-		{
-			while (currentIndex > -1)
-			{
-				nums1[currentIndex--] = nums2[n--];
-			}
-			return;
-		}
-	}
-}
+                //숫자인 경우
+                if (value < 0x3A)
+                {
+                    var numSize = 1;
+
+					while (s[i - 1 + numSize] < 0x3A)
+					{
+                        numSize++;
+					}
+
+					var count = int.Parse(s.Substring(i - 1, numSize));
+					i += numSize;
+					result.Append(GetRepeat(count, s, ref i));
+                }
+                //문자인 경우
+                else if (value > 0x60)
+                {
+                    result.Append((char)value);
+
+                }
+            }
+
+            return result.ToString();
+        }
+
+        private string GetRepeat(int c, string s, ref int index)
+        {
+            var sb = new StringBuilder();
+
+            while (true)
+            {
+                var value = (int)s[index];
+
+                index++;
+
+                if (value < 0x3A)
+                {
+                    var numSize = 1;
+
+                    while (s[index - 1 + numSize] < 0x3A)
+                    {
+                        numSize++;
+                    }
+
+                    var count = int.Parse(s.Substring(index - 1, numSize));
+					index += numSize;
+
+					sb.Append(GetRepeat(count, s, ref index));
+                }
+                else if (value > 0x60)
+                {
+                    sb.Append((char)value);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            var text = sb.ToString();
+
+            for (int j = 0; j < c - 1; j++)
+            {
+                sb.Append(text);
+            }
+
+            return sb.ToString();
+        }
+    }
 ```
