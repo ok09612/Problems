@@ -3,9 +3,8 @@
 
 # FizzBuzz
 public class Solution {
-    public IList<string> FizzBuzz(int n) {
-        n = Console.ReadLine();
-        IList<string> result  = new IList<string>();
+    public IList<string> FizzBuzz(int n) {        
+        List<string> result  = new List<string>();
         
         for(int i=1;i<=n;i++)
         {
@@ -27,5 +26,7 @@ public class Solution {
             
             result.Add(s);
         }
+        
+        return result;
     }
 }
