@@ -1,51 +1,88 @@
 # Problems
 
-https://leetcode.com/problems/merge-intervals/
+https://leetcode.com/problems/split-a-string-into-the-max-number-of-unique-substrings/
 
 ``` C#
 public class Solution
 {
-	public int[][] Merge(int[][] intervals)
+	public int MaxUniqueSplit(string s)
 	{
-        intervals = intervals.OrderBy(x => x[0]).ToArray();
-           
-		var result = new List<int[]>();
-		var start = intervals[0][0];
-		var end = intervals[0][1];
+		var set = new HashSet<string>();
+		var stack = new Stack<string>();
 
-		for (int i = 1; i < intervals.Length; i++)
+		var maximum = 0;
+
+		Split(s, 0, set, stack, ref maximum);
+
+		return maximum;
+	}
+
+	private void Split(string s, int currentIndex, HashSet<string> set, Stack<string> stack, ref int maximum)
+	{
+		if (currentIndex == s.Length)
 		{
-			if (intervals[i][0] <= end)
+			if (set.Count > maximum)
 			{
-				if (end < intervals[i][1])
-				{
-					end = intervals[i][1];
-				}
+				maximum = set.Count;
+			}
+
+			return;
+		}
+
+		for (int i = 1; i <= s.Length - currentIndex; i++)
+		{
+			var subString = s.Substring(currentIndex, i);
+
+			if (set.Contains(subString))
+			{
 				continue;
 			}
 			else
 			{
-				result.Add(new int[] { start, end });
-				start = intervals[i][0];
-				end = intervals[i][1];
+				set.Add(subString);
+				stack.Push(subString);
+
+				Split(s, currentIndex + i, set, stack, ref maximum);
+
+				set.Remove(stack.Pop());
 			}
 		}
+	}
+}
+```
 
-		if (result.Count > 0)
+https://leetcode.com/problems/fizz-buzz/
+
+``` C#
+public class Solution
+{
+	public IList<string> FizzBuzz(int n)
+	{
+		var result = new string[n];
+
+		for (int i = 1; i <= n; i++)
 		{
-			var last = result[result.Count - 1];
+			var index = i - 1;
 
-			if (last[0] != start || last[1] != end)
+			if (i % 15 == 0)
 			{
-				result.Add(new int[] { start, end });
+				result[index] = "FizzBuzz";
+			}
+			else if (i % 5 == 0)
+			{
+				result[index] = "Buzz";
+			}
+			else if (i % 3 == 0)
+			{
+				result[index] = "Fizz";
+			}
+			else
+			{
+				result[index] = i.ToString();
 			}
 		}
-		else
-		{
-			result.Add(new int[] { start, end });
-		}
 
-		return result.ToArray();
+		return result;
 	}
 }
 ```
