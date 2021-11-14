@@ -1,6 +1,6 @@
-/*
-  Fizz Buzz
- */
+# Fizz Buzz
+
+``` c#
 public class Solution {
     public IList<string> FizzBuzz(int n) {
         List<string> lst = new List<string>();
@@ -24,31 +24,57 @@ public class Solution {
         return lst;
     }
 }
+```
 
+# Split a String Into the Max Number of Unique Substrings
+- 못 풀겠어서.. 열심히 삽질한 코드만 올립니다.. ㅠㅠ
 
-/*
-  Split a String Into the Max Number of Unique Substrings
-  "wwwzfvedwfvhsww" < 여기서 막혔습니다 ㅠㅠ
- */
+```c#
 public class Solution {
-    public int MaxUniqueSplit(string s) {
+    public static int MaxUniqueSplit(string s)
+    {
+        List<KeyValuePair<int, List<string>>> lst = new List<KeyValuePair<int, List<string>>>();
+
+        for (int i=0; i<s.Length; i++)
+            lst.Add(GetMaxUniqueSplit(s, i));
+
+        return lst.Max(x => x.Value.Count);
+    }
+
+    public static KeyValuePair<int, List<string>> GetMaxUniqueSplit(string s, int index)
+    {
         List<string> lstChars = new List<string>();
         string currentTarget = string.Empty;
-        
+        int lastIndex = index - 1;
+
         for (int i=0; i<s.Length; i++)
         {
-            currentTarget += s[i];
-            
-            if (i != s.Length - 1 && lstChars.Contains(s.Substring(i + 1)))
+            int currentIndex = i + index;
+
+            if (currentIndex >= s.Length)
+                currentIndex %= s.Length;
+
+            currentTarget += s[currentIndex];
+
+            if (currentIndex != s.Length - 1 && lstChars.Contains(s.Substring(currentIndex + 1)))
                 continue;
-            
+
+            if (index > 0 && currentIndex != index - 1)
+            {
+                int startIndex = currentIndex > lastIndex ? 0 : currentIndex + 1;
+
+                if (startIndex != lastIndex && lstChars.Contains(s.Substring(startIndex, lastIndex - startIndex - 1)))
+                    continue;
+            }
+
             if (lstChars.Contains(currentTarget))
                 continue;
-            
+
             lstChars.Add(currentTarget);
             currentTarget = string.Empty;
         }
-        
-        return lstChars.Count;
+
+        return new KeyValuePair<int, List<string>>(index, lstChars);
     }
 }
+```
