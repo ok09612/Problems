@@ -1,5 +1,31 @@
 # Uniqe string
+public class Solution {
+    public int MaxUniqueSplit(string s) {
+        List<string> list = new List<string>();
+        for(int i=0;i<s.Length;i++)
+        {
+            if(list.Exists(x => x == s.Substring(i, 1)))
+            {
+                if (i == s.Length-1)
+                {
+                    break;
+                }
 
+                if (!list.Exists(x => x == s.Substring(i, 2)))
+                {
+                    list.Add(s.Substring(i, 2));
+                    i += 1;
+                }
+            }
+            else
+            {
+                list.Add(s.Substring(i, 1));
+            }
+        }
+
+        return list.Count;
+    }
+}
 
 # FizzBuzz
 public class Solution {
