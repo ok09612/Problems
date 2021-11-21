@@ -1,80 +1,145 @@
-# Fizz Buzz
+# 타겟 넘버
+- https://programmers.co.kr/learn/courses/30/lessons/43165
 
-``` c#
+```c#
+using System;
+
 public class Solution {
-    public IList<string> FizzBuzz(int n) {
-        List<string> lst = new List<string>();
+    private int count = 0;
 
-        for (int i = 1; i <= n; i++)
+    public int solution(int[] numbers, int target)
+    {
+        dfs(numbers, target, 0, 0);
+
+        return count;
+    }
+
+    public void dfs(int[] numbers, int target, int currentIndex, int total)
+    {
+        if (currentIndex == numbers.Length)
         {
-            string result;
-
-            if (i % 3 == 0 && i % 5 == 0)
-                result = "FizzBuzz";
-            else if (i % 3 == 0)
-                result = "Fizz";
-            else if (i % 5 == 0)
-                result = "Buzz";
-            else
-                result = i.ToString();
-            
-            lst.Add(result);
+            if (target == total)
+                count++;
         }
-        
-        return lst;
+        else
+        {
+            dfs(numbers, target, currentIndex + 1, total + numbers[currentIndex]);
+            dfs(numbers, target, currentIndex + 1, total - numbers[currentIndex]);
+        }
     }
 }
 ```
 
-# Split a String Into the Max Number of Unique Substrings
-- 못 풀겠어서.. 열심히 삽질한 코드만 올립니다.. ㅠㅠ
+# Binary Tree Zigzag Level Order Traversal
+- https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
 
 ```c#
 public class Solution {
-    public static int MaxUniqueSplit(string s)
-    {
-        List<KeyValuePair<int, List<string>>> lst = new List<KeyValuePair<int, List<string>>>();
+    public IList<IList<int>> ZigzagLevelOrder(TreeNode root) {
+        IList<IList<int>> output = new List<IList<int>>();
 
-        for (int i=0; i<s.Length; i++)
-            lst.Add(GetMaxUniqueSplit(s, i));
+        if (root != null)
+            SearchTree(new List<TreeNode> { root }, 0, true, ref output);
 
-        return lst.Max(x => x.Value.Count);
+        return output;
     }
 
-    public static KeyValuePair<int, List<string>> GetMaxUniqueSplit(string s, int index)
+    void SearchTree(List<TreeNode> nodes, int level, bool asc, ref IList<IList<int>> output)
     {
-        List<string> lstChars = new List<string>();
-        string currentTarget = string.Empty;
-        int lastIndex = index - 1;
+        List<TreeNode> lstChild =  new List<TreeNode>();
 
-        for (int i=0; i<s.Length; i++)
+        if (output.Count < level + 1)
+            output.Add(new List<int>());
+
+        for (int i=nodes.Count - 1; i>=0; i--)
         {
-            int currentIndex = i + index;
+            TreeNode r = nodes[i];
 
-            if (currentIndex >= s.Length)
-                currentIndex %= s.Length;
+            output[level].Add(r.val);
 
-            currentTarget += s[currentIndex];
-
-            if (currentIndex != s.Length - 1 && lstChars.Contains(s.Substring(currentIndex + 1)))
-                continue;
-
-            if (index > 0 && currentIndex != index - 1)
+            if (asc)
             {
-                int startIndex = currentIndex > lastIndex ? 0 : currentIndex + 1;
+                if (r.left != null)
+                    lstChild.Add(r.left);
 
-                if (startIndex != lastIndex && lstChars.Contains(s.Substring(startIndex, lastIndex - startIndex - 1)))
-                    continue;
+                if (r.right != null)
+                    lstChild.Add(r.right);
             }
+            else
+            {
+                if (r.right != null)
+                    lstChild.Add(r.right);
 
-            if (lstChars.Contains(currentTarget))
-                continue;
-
-            lstChars.Add(currentTarget);
-            currentTarget = string.Empty;
+                if (r.left != null)
+                    lstChild.Add(r.left);
+            }
         }
 
-        return new KeyValuePair<int, List<string>>(index, lstChars);
+        if (lstChild.Count > 0)
+            SearchTree(lstChild, level + 1, !asc, ref output);
+    }
+}
+```
+
+# Number of Islands
+- https://leetcode.com/problems/number-of-islands/
+
+```c#
+public class Solution {
+    int MaxX = 0;
+    int MaxY = 0;
+    int IslandCount = 0;
+    public int NumIslands(char[][] grid) {
+        if (grid.Length > 0 && grid[0].Length > 0)
+        {
+            MaxY = grid.Length;
+            MaxX = grid[0].Length;
+
+            bool[,] flags = new bool[MaxX, MaxY];
+
+            for (int i=0; i<MaxX; i++)
+            {
+                for (int j=0; j<MaxY; j++)
+                    flags[i,j] = false;
+            }
+
+            for (int y=0; y<MaxY; y++)
+            {
+                for (int x=0; x<MaxX; x++)
+                {
+                    if (grid[y][x] == '1')
+                    {
+                        SearchArray(grid, flags, x, y, true);
+                    }
+                }
+            }
+
+            return IslandCount;
+        }
+        return 0;
+    }
+
+    void SearchArray(char[][] grid, bool[,] flag, int x, int y, bool newIsland)
+    {
+        if (flag[x,y])
+            return;
+
+        flag[x,y]=true;
+
+        if (newIsland)
+            IslandCount++;
+
+        if (x - 1 >= 0 && grid[y][x - 1] == '1' && !flag[x-1,y])
+            SearchArray(grid, flag, x - 1, y, false);
+
+        if (y - 1 >= 0 && grid[y - 1][x] == '1' && !flag[x,y-1])
+            SearchArray(grid, flag, x, y - 1, false);
+
+        if (x + 1 < MaxX && grid[y][x + 1] == '1' && !flag[x+1,y])
+            SearchArray(grid, flag, x + 1, y, false);
+
+        if (y + 1 < MaxY && grid[y + 1][x] == '1' && !flag[x,y+1])
+            SearchArray(grid, flag, x, y + 1, false);    
     }
 }
 ```
