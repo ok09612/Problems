@@ -1,196 +1,231 @@
 # Problems
 
-https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/
+https://leetcode.com/problems/generate-parentheses/
 
 ``` C#
 public class Solution
 {
-    public IList<IList<int>> ZigzagLevelOrder(TreeNode root)
-    {
-        var result = new List<IList<int>>();
+	public IList<string> GenerateParenthesis(int n)
+	{
+		var result = new List<string>();
 
-        if (root == null)
-        {
-            return result;
-        }
+		var openCount = n;
+		var closeCount = n;
 
-		//순차적인 작업을 보장하기위한 Queue
-        var nextNodes = new Queue<TreeNode>();
+		Generate(string.Empty, openCount, closeCount, result);
 
-        nextNodes.Enqueue(root);
+		return result;
+	}
 
-		//방향 전환용 변수
-        var fromLeft = true;
+	private void Generate(string text, int openCount, int closeCount, List<string> result)
+	{
+		if (openCount == 0 && closeCount == 0)
+		{
+			result.Add(text);
+			return;
+		}
 
-        while (nextNodes.Count > 0)
-        {
-            if (fromLeft)
-            {
-                ToRight(nextNodes, result);
-            }
-            else
-            {
-                ToLeft(nextNodes, result);
-            }
+		if (openCount > 0)
+		{
+			Generate(text + "(", openCount - 1, closeCount, result);
+		}
 
-            fromLeft = !fromLeft;
-        }
-
-        return result;
-    }
-
-    private void ToLeft(Queue<TreeNode> nextNodes, List<IList<int>> result)
-    {
-        var nodeCount = nextNodes.Count;
-
-        var currentResult = new List<int>();
-
-		//Queue에 의해 순서대로 작업을 진행하지만 다음 작업의 경우 순서가 반전이 되어야하기 때문에 Stack으로 순서 백업
-        var stack = new Stack<TreeNode>();
-
-        for (int i = 0; i < nodeCount; i++)
-        {
-            var item = nextNodes.Dequeue();
-
-            currentResult.Add(item.val);
-
-			//실제로 ToLeft와 ToRight 메서드에서 다른 부분 순서에따라 어느방향의 노드부터 저장할지 결정
-            if (item.right != null)
-            {
-                stack.Push(item.right);
-            }
-
-            if (item.left != null)
-            {
-                stack.Push(item.left);
-            }
-        }
-
-        while (stack.Count > 0)
-        {
-            nextNodes.Enqueue(stack.Pop());
-        }
-
-        result.Add(currentResult);
-    }
-
-    private void ToRight(Queue<TreeNode> nextNodes, List<IList<int>> result)
-    {
-        var nodeCount = nextNodes.Count;
-
-        var currentResult = new List<int>();
-
-        var stack = new Stack<TreeNode>();
-
-        for (int i = 0; i < nodeCount; i++)
-        {
-            var item = nextNodes.Dequeue();
-
-            currentResult.Add(item.val);
-
-            if (item.left != null)
-            {
-                stack.Push(item.left);
-            }
-
-            if (item.right != null)
-            {
-                stack.Push(item.right);
-            }
-        }
-
-        while (stack.Count > 0)
-        {
-            nextNodes.Enqueue(stack.Pop());
-        }
-
-        result.Add(currentResult);
-    }
+		if (openCount < closeCount)
+		{
+			Generate(text + ")", openCount, closeCount - 1, result);
+		}
+	}
 }
 ```
 
-https://leetcode.com/problems/number-of-islands/
+https://leetcode.com/problems/palindrome-number/
 
 ``` C#
 public class Solution
 {
-	//맵 크기 저장용 변수
-    int n, m;
+	public bool IsPalindrome(int x)
+	{
+		if (x < 0)
+		{
+			return false;
+		}
 
-    public int NumIslands(char[][] grid)
-    {
-		//크기 정보 ㅊ초기화
-        n = grid.GetLength(0);
-        m = grid[0].Length;
+		if (x < 10)
+		{
+			return true;
+		}
 
-		//land 마킹용 변수, grid 변수와 동일한 크기를 가짐.
-        var lands = new int[n][];
+		var value = x;
 
-        for (int i = 0; i < n; i++)
-        {
-            lands[i] = new int[m];
-        }
+		var dequeue = new DoubleEndedQueue<int>();
+		var length = 0;
 
-		//land의 id, 1부터 증가시킬 예정이므로 최종값이 land의 개수
-        var landId = 0;
+		while (value > 0)
+		{
+			var tail = value % 10;
 
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < m; j++)
-            {
-				//땅이 아니거나 이미 마킹이 되어있다면 작업을 할 필요가 없음.
-                if (!IsValid(i, j, grid, lands))
-                {
-                    continue;
-                }
+			dequeue.FrontEnqueue(tail);
 
-                Mark(i, j, grid, lands, ++landId);
-            }
-        }
+			value /= 10;
+			length++;
+		}
 
-        return landId;
-    }
+		for (int i = 0; i < length / 2; i++)
+		{
+			var forward = dequeue.GetForward();
+			var backward = dequeue.GetBackward();
 
-    private void Mark(int i, int j, char[][] grid, int[][] lands, int landId)
-    {
-		//땅이 아니거나 이미 마킹이 되어있다면 작업을 할 필요가 없음.
-        if (!IsValid(i, j, grid, lands))
-        {
-            return;
-        }
+			if (forward != backward)
+			{
+				return false;
+			}
+		}
 
-        lands[i][j] = landId;
+		return true;
+	}
+}
 
-        var left = j - 1;
-        var right = j + 1;
-        var top = i - 1;
-        var bottom = i + 1;
+public class DoubleEndedQueue<T>
+{
+	public T Forward {
+		get
+		{
+			if (ForwardNode == null)
+			{
+				throw new Exception($"{nameof(Forward)} is Empty");
+			}
+			else
+			{
+				return ForwardNode.Value;
+			}
+		}
+	}
 
-		//위치별로 
-        if (left > -1)
-        {
-            Mark(i, left, grid, lands, landId);
-        }
+	public T Backward {
+		get
+		{
+			if (BackwardNode == null)
+			{
+				throw new Exception($"{nameof(Backward)} is Empty");
+			}
+			else
+			{
+				return BackwardNode.Value;
+			}
+		}
+	}
 
-        if (right < m)
-        {
-            Mark(i, right, grid, lands, landId);
-        }
+	private Node<T> ForwardNode { get; set; }
 
-        if (top > -1)
-        {
-            Mark(top, j, grid, lands, landId);
-        }
+	private Node<T> BackwardNode { get; set; }
 
-        if (bottom < n)
-        {
-            Mark(bottom, j, grid, lands, landId);
-        }
-    }
+	public T GetForward()
+	{
+		if (ForwardNode == null)
+		{
+			throw new Exception($"{nameof(Forward)} is Empty");
+		}
 
-	private bool IsValid(int i, int j, char[][] grid, int[][] lands)
-    {
-        return grid[i][j] == '0' || lands[i][j] != 0 ? false : true;
-    }
+		var result = ForwardNode.Value;
+
+		ForwardArrange();
+
+		return result;
+	}
+
+
+
+	public T GetBackward()
+	{
+		if (BackwardNode == null)
+		{
+			throw new Exception($"{nameof(Backward)} is Empty");
+		}
+
+		var result = BackwardNode.Value;
+
+		BackwardArrange();
+
+		return result;
+	}
+
+	private void ForwardArrange()
+	{
+		if (ForwardNode == BackwardNode)
+		{
+			ForwardNode = null;
+			BackwardNode = null;
+		}
+		else
+		{
+			ForwardNode = ForwardNode.Back;
+
+			if (ForwardNode != null)
+			{
+				ForwardNode.Front = null;
+			}
+		}
+	}
+
+	private void BackwardArrange()
+	{
+		if (ForwardNode == BackwardNode)
+		{
+			ForwardNode = null;
+			BackwardNode = null;
+		}
+		else
+		{
+			BackwardNode = BackwardNode.Front;
+
+			if (BackwardNode != null)
+			{
+				BackwardNode.Back = null;
+			}
+		}
+	}
+
+	public void FrontEnqueue(T value)
+	{
+		var newNode = new Node<T>() { Value = value };
+
+		if (ForwardNode == null)
+		{
+			BackwardNode = newNode;
+			ForwardNode = newNode;
+		}
+		else
+		{
+			newNode.Back = ForwardNode;
+			ForwardNode.Front = newNode;
+			ForwardNode = newNode;
+		}
+	}
+
+	public void BackEnqueue(T value)
+	{
+		var newNode = new Node<T>() { Value = value };
+
+		if (BackwardNode == null)
+		{
+			BackwardNode = newNode;
+			ForwardNode = newNode;
+		}
+		else
+		{
+			newNode.Front = BackwardNode;
+			BackwardNode.Back = newNode;
+			BackwardNode = newNode;
+		}
+	}
+}
+
+public class Node<T>
+{
+	public T Value { get; set; }
+
+	public Node<T> Front { get; set; }
+
+	public Node<T> Back { get; set; }
 }
 ```
