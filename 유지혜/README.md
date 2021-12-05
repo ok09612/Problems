@@ -1,58 +1,37 @@
-# Uniqe string
-public class Solution {
-    public int MaxUniqueSplit(string s) {
-        List<string> list = new List<string>();
-        for(int i=0;i<s.Length;i++)
+# Plus One
+public int[] PlusOne(int[] digits) {
+    bool plus =true;
+    int[] calc = new int[digits.Length];
+    for (int i = digits.Length - 1; i >= 0; i--)
+    {
+        int ori = digits[i];
+        if (plus)
         {
-            if(list.Exists(x => x == s.Substring(i, 1)))
-            {
-                if (i == s.Length-1)
-                {
-                    break;
-                }
+            digits[i] += 1;
 
-                if (!list.Exists(x => x == s.Substring(i, 2)))
-                {
-                    list.Add(s.Substring(i, 2));
-                    i += 1;
-                }
+            if(digits[i] == 10)
+            {
+                digits[i] = 0;
             }
             else
             {
-                list.Add(s.Substring(i, 1));
+                plus = false;
             }
         }
 
-        return list.Count;
+        calc[i] = digits[i];
     }
-}
 
-# FizzBuzz
-public class Solution {
-    public IList<string> FizzBuzz(int n) {        
-        List<string> result  = new List<string>();
-        
-        for(int i=1;i<=n;i++)
+    int[] answer = calc;
+    if (plus)
+    {
+        answer = new int[digits.Length + 1];
+        answer[0] = 1;
+        for(int i = 0; i < calc.Length; i++)
         {
-            string s = "";
-            if (i%3 == 0)
-            {
-                s = "Fizz";
-            }
-            
-            if (i%5== 0)
-            {
-                s += "Buzz";
-            }
-            
-            if (s.Length == 0)
-            {
-                s = i.ToString();
-            }
-            
-            result.Add(s);
+            answer[i + 1] = calc[i];
         }
-        
-        return result;
     }
+
+    return answer;
 }
