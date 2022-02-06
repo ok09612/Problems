@@ -48,4 +48,41 @@ public class Solution {
 }
 ```
 
-# 2번 문제 - 추후 업데이트 예정
+# 2번 문제 - 프로그래머스_가장 큰 수
+```C#
+
+using System;
+using System.Text;
+
+public class Solution {
+    public string solution(int[] numbers) {
+        string answer = "";
+        int zeroCount = 0;
+        StringBuilder sb = new StringBuilder();
+
+        foreach (var num in numbers)
+        {
+            if (num == 0) ++zeroCount;
+        }
+
+        if (zeroCount == numbers.Length)
+        {
+            answer = "0";
+        }
+        else
+        {
+            Array.Sort(numbers, (x, y) => string.Compare(y.ToString() + x.ToString(), x.ToString() + y.ToString()));
+
+            foreach (int num in numbers)
+            {
+                sb.Append(num.ToString());
+            }
+
+            answer = sb.ToString();
+        }
+        
+        return answer;
+    }
+}
+
+```
