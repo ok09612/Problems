@@ -1,5 +1,5 @@
-# 538. Convert BST to Greater Tree
-- https://leetcode.com/problems/binary-search-tree-to-greater-sum-tree/
+# Same Tree
+- https://leetcode.com/problems/same-tree/
 
 ```c#
 /**
@@ -16,26 +16,21 @@
  * }
  */
 public class Solution {
-    public TreeNode ConvertBST(TreeNode root) {
-        int currentValue = 0;
-        
-        if (root != null)
-            dfs(root, currentValue);
-        
-        return root;
+    public bool IsSameTree(TreeNode p, TreeNode q) {
+        return CompareTree(p, q);
     }
     
-    private int dfs(TreeNode root, int currentValue) {
-        if (root.right != null)
-            currentValue = dfs(root.right, currentValue);
+    private bool CompareTree(TreeNode p, TreeNode q) {
+        // 둘 다 null인 경우 다음을 비교할 필요가 없으므로 상위에서 비교했던 노드들이 모두 동일하다고 판단
+        if (p == null && q == null)
+            return true;
         
-        currentValue += root.val;
-        root.val = currentValue;
+        // 둘의 값이 다를 경우 동일하지 않다고 판단
+        if (p?.val != q?.val)
+            return false;
         
-        if (root.left != null)
-            currentValue = dfs(root.left, currentValue);
-        
-        return currentValue;
+        // 좌, 우 자식노드가 동일한지 여부 판단
+        return CompareTree(p?.left, q?.left) && CompareTree(p?.right, q?.right);
     }
 }
 ```
