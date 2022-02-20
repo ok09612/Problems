@@ -1,231 +1,97 @@
 # Problems
 
-https://leetcode.com/problems/generate-parentheses/
+https://leetcode.com/problems/deepest-leaves-sum/
 
 ``` C#
 public class Solution
 {
-	public IList<string> GenerateParenthesis(int n)
+	public int DeepestLeavesSum(TreeNode root)
 	{
-		var result = new List<string>();
+		var deepestIndex = 0;
 
-		var openCount = n;
-		var closeCount = n;
+		SetDeepestIndex(root, ref deepestIndex, 0);
 
-		Generate(string.Empty, openCount, closeCount, result);
+		var sum = 0;
 
-		return result;
+		SumDeepestValues(root, ref sum, 0, deepestIndex);
+
+		return sum;
 	}
 
-	private void Generate(string text, int openCount, int closeCount, List<string> result)
+	private void SumDeepestValues(TreeNode node, ref int sum, int currentIndex, int deepestIndex)
 	{
-		if (openCount == 0 && closeCount == 0)
+		if (node == null)
 		{
-			result.Add(text);
 			return;
 		}
 
-		if (openCount > 0)
+		if (currentIndex == deepestIndex)
 		{
-			Generate(text + "(", openCount - 1, closeCount, result);
+			sum += node.val;
+
+			return;
 		}
 
-		if (openCount < closeCount)
+		if (currentIndex < deepestIndex)
 		{
-			Generate(text + ")", openCount, closeCount - 1, result);
+			SumDeepestValues(node.left, ref sum, currentIndex + 1, deepestIndex);
+			SumDeepestValues(node.right, ref sum, currentIndex + 1, deepestIndex);
+		}
+
+		return;
+	}
+
+	private void SetDeepestIndex(TreeNode node, ref int deepestIndex, int currentIndex)
+	{
+		if (deepestIndex < currentIndex)
+		{
+			deepestIndex = currentIndex;
+		}
+
+		if (node.left != null)
+		{
+			SetDeepestIndex(node.left, ref deepestIndex, currentIndex + 1);
+		}
+
+		if (node.right != null)
+		{
+			SetDeepestIndex(node.right, ref deepestIndex, currentIndex + 1);
 		}
 	}
 }
 ```
 
-https://leetcode.com/problems/palindrome-number/
+https://leetcode.com/problems/rings-and-rods/
 
 ``` C#
 public class Solution
 {
-	public bool IsPalindrome(int x)
+	public int CountPoints(string rings)
 	{
-		if (x < 0)
+		var rods = new Dictionary<int, HashSet<char>>();
+
+		for (int i = 0; i < 10; i++)
 		{
-			return false;
+			rods.Add(i, new HashSet<char>() { 'R', 'G', 'B'});
 		}
 
-		if (x < 10)
+		for (int i = 0; i < rings.Length / 2; i++)
 		{
-			return true;
-		}
+			var color = rings[i * 2];
+			var rodIndex = Convert.ToInt32(rings[i * 2 + 1]) - 48;
 
-		var value = x;
-
-		var dequeue = new DoubleEndedQueue<int>();
-		var length = 0;
-
-		while (value > 0)
-		{
-			var tail = value % 10;
-
-			dequeue.FrontEnqueue(tail);
-
-			value /= 10;
-			length++;
-		}
-
-		for (int i = 0; i < length / 2; i++)
-		{
-			var forward = dequeue.GetForward();
-			var backward = dequeue.GetBackward();
-
-			if (forward != backward)
+			if (rods.TryGetValue(rodIndex, out var rod))
 			{
-				return false;
+				rod.Remove(color);
+
+				if (rod.Count == 0)
+				{
+					rods.Remove(rodIndex);
+				}
 			}
 		}
 
-		return true;
+		return 10 - rods.Count;
 	}
-}
-
-public class DoubleEndedQueue<T>
-{
-	public T Forward {
-		get
-		{
-			if (ForwardNode == null)
-			{
-				throw new Exception($"{nameof(Forward)} is Empty");
-			}
-			else
-			{
-				return ForwardNode.Value;
-			}
-		}
-	}
-
-	public T Backward {
-		get
-		{
-			if (BackwardNode == null)
-			{
-				throw new Exception($"{nameof(Backward)} is Empty");
-			}
-			else
-			{
-				return BackwardNode.Value;
-			}
-		}
-	}
-
-	private Node<T> ForwardNode { get; set; }
-
-	private Node<T> BackwardNode { get; set; }
-
-	public T GetForward()
-	{
-		if (ForwardNode == null)
-		{
-			throw new Exception($"{nameof(Forward)} is Empty");
-		}
-
-		var result = ForwardNode.Value;
-
-		ForwardArrange();
-
-		return result;
-	}
-
-
-
-	public T GetBackward()
-	{
-		if (BackwardNode == null)
-		{
-			throw new Exception($"{nameof(Backward)} is Empty");
-		}
-
-		var result = BackwardNode.Value;
-
-		BackwardArrange();
-
-		return result;
-	}
-
-	private void ForwardArrange()
-	{
-		if (ForwardNode == BackwardNode)
-		{
-			ForwardNode = null;
-			BackwardNode = null;
-		}
-		else
-		{
-			ForwardNode = ForwardNode.Back;
-
-			if (ForwardNode != null)
-			{
-				ForwardNode.Front = null;
-			}
-		}
-	}
-
-	private void BackwardArrange()
-	{
-		if (ForwardNode == BackwardNode)
-		{
-			ForwardNode = null;
-			BackwardNode = null;
-		}
-		else
-		{
-			BackwardNode = BackwardNode.Front;
-
-			if (BackwardNode != null)
-			{
-				BackwardNode.Back = null;
-			}
-		}
-	}
-
-	public void FrontEnqueue(T value)
-	{
-		var newNode = new Node<T>() { Value = value };
-
-		if (ForwardNode == null)
-		{
-			BackwardNode = newNode;
-			ForwardNode = newNode;
-		}
-		else
-		{
-			newNode.Back = ForwardNode;
-			ForwardNode.Front = newNode;
-			ForwardNode = newNode;
-		}
-	}
-
-	public void BackEnqueue(T value)
-	{
-		var newNode = new Node<T>() { Value = value };
-
-		if (BackwardNode == null)
-		{
-			BackwardNode = newNode;
-			ForwardNode = newNode;
-		}
-		else
-		{
-			newNode.Front = BackwardNode;
-			BackwardNode.Back = newNode;
-			BackwardNode = newNode;
-		}
-	}
-}
-
-public class Node<T>
-{
-	public T Value { get; set; }
-
-	public Node<T> Front { get; set; }
-
-	public Node<T> Back { get; set; }
 }
 ```
