@@ -1,97 +1,118 @@
 # Problems
 
-https://leetcode.com/problems/deepest-leaves-sum/
+https://leetcode.com/problems/number-of-steps-to-reduce-a-number-to-zero/
 
 ``` C#
-public class Solution
-{
-	public int DeepestLeavesSum(TreeNode root)
-	{
-		var deepestIndex = 0;
-
-		SetDeepestIndex(root, ref deepestIndex, 0);
-
-		var sum = 0;
-
-		SumDeepestValues(root, ref sum, 0, deepestIndex);
-
-		return sum;
-	}
-
-	private void SumDeepestValues(TreeNode node, ref int sum, int currentIndex, int deepestIndex)
-	{
-		if (node == null)
-		{
-			return;
-		}
-
-		if (currentIndex == deepestIndex)
-		{
-			sum += node.val;
-
-			return;
-		}
-
-		if (currentIndex < deepestIndex)
-		{
-			SumDeepestValues(node.left, ref sum, currentIndex + 1, deepestIndex);
-			SumDeepestValues(node.right, ref sum, currentIndex + 1, deepestIndex);
-		}
-
-		return;
-	}
-
-	private void SetDeepestIndex(TreeNode node, ref int deepestIndex, int currentIndex)
-	{
-		if (deepestIndex < currentIndex)
-		{
-			deepestIndex = currentIndex;
-		}
-
-		if (node.left != null)
-		{
-			SetDeepestIndex(node.left, ref deepestIndex, currentIndex + 1);
-		}
-
-		if (node.right != null)
-		{
-			SetDeepestIndex(node.right, ref deepestIndex, currentIndex + 1);
-		}
-	}
+public class Solution {
+    public int NumberOfSteps(int num) {
+        
+        var count = 0;
+        
+        while(num != 0){
+            count++;
+            if(num % 2 == 1){
+                num -= 1;
+            }
+            else{
+                num /= 2;
+            }            
+        }
+        
+        return count;
+    }
 }
 ```
 
-https://leetcode.com/problems/rings-and-rods/
+https://leetcode.com/problems/recover-a-tree-from-preorder-traversal/
 
 ``` C#
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left;
+ *     public TreeNode right;
+ *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
 public class Solution
 {
-	public int CountPoints(string rings)
+	public TreeNode RecoverFromPreorder(string traversal)
 	{
-		var rods = new Dictionary<int, HashSet<char>>();
+		//부모 노드를 바로바로 추적 할 수 있도록 stack을 사용
+		var stack = new Stack<TreeNode>();
+		//부모 노드를 추적하기위한 count
+		var depth = 0;
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < traversal.Length; i++)
 		{
-			rods.Add(i, new HashSet<char>() { 'R', 'G', 'B'});
-		}
-
-		for (int i = 0; i < rings.Length / 2; i++)
-		{
-			var color = rings[i * 2];
-			var rodIndex = Convert.ToInt32(rings[i * 2 + 1]) - 48;
-
-			if (rods.TryGetValue(rodIndex, out var rod))
+			var item = traversal[i];
+			
+			//Depth일 경우
+			if (item == '-')
 			{
-				rod.Remove(color);
+				depth++;
+			}
+			//숫자일 경우
+			else
+			{
+				//숫자의 문자열 길이가 한글자가 아닐수도 있음.
+				var numberLength = GetNumberLength(traversal, i);
+				var value = int.Parse(traversal.Substring(i, numberLength));
+				//숫자의 길이만큼 index 조정
+				i += numberLength - 1;
+				var newNode = new TreeNode(value);
 
-				if (rod.Count == 0)
+				if (stack.Count != 0)
 				{
-					rods.Remove(rodIndex);
+					while (stack.Count > depth)
+					{
+						stack.Pop();
+					}
+
+					var parent = stack.Peek();
+
+					if (parent.left == null)
+					{
+						parent.left = newNode;
+					}
+					else
+					{
+						parent.right = newNode;
+					}
 				}
+
+				stack.Push(newNode);
+
+				depth = 0;
 			}
 		}
 
-		return 10 - rods.Count;
+		//root 반환
+		return stack.Last();
+	}
+
+	private int GetNumberLength(string traversal, int startIndex)
+	{
+		var numberLength = 0;
+
+		for (int i = startIndex; i < traversal.Length; i++)
+		{
+			if (traversal[i] != '-')
+			{
+				numberLength++;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		return numberLength;
 	}
 }
 ```
