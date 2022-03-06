@@ -1,112 +1,83 @@
-# Plus One
-public int[] PlusOne(int[] digits) {
-    bool plus =true;
-    int[] calc = new int[digits.Length];
-    for (int i = digits.Length - 1; i >= 0; i--)
+# 1342. Number of Steps to Reduce a Number to Zero
+public int NumberOfSteps(int num)
     {
-        int ori = digits[i];
-        if (plus)
-        {
-            digits[i] += 1;
+        int result = 0;
 
-            if(digits[i] == 10)
+        while (num > 0)
+        {
+            int odd = num % 2;
+            if (odd == 0)
             {
-                digits[i] = 0;
+                num = num / 2;
             }
             else
             {
-                plus = false;
+                num = num - odd;
             }
+            result++;
         }
 
-        calc[i] = digits[i];
+        return result;
     }
 
-    int[] answer = calc;
-    if (plus)
+
+# 1116. Print Zero Even Odd
+public class ZeroEvenOdd
     {
-        answer = new int[digits.Length + 1];
-        answer[0] = 1;
-        for(int i = 0; i < calc.Length; i++)
+        private int n;
+
+        AutoResetEvent zeroEvent = new AutoResetEvent(true);
+        AutoResetEvent evenEvent = new AutoResetEvent(false);
+        AutoResetEvent oddEvent = new AutoResetEvent(false);
+
+        public ZeroEvenOdd(int n)
         {
-            answer[i + 1] = calc[i];
+            this.n = n;
+            Thread tzero = new Thread(new ParameterizedThreadStart(Zero));
+            Thread teven = new Thread(new ParameterizedThreadStart(Even));
+            Thread teodd = new Thread(new ParameterizedThreadStart(Odd));
+            tzero.Start();
+            teven.Start();
+            teodd.Start();
         }
-    }
 
-    return answer;
-}
-
-
-#신고 결과 받기
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-public class Solution {
-     public int[] solution(string[] id_list, string[] report, int k)
+        // printNumber(x) outputs "x", where x is an integer.
+        public void Zero(object printNumber)
         {
-            int idcount = id_list.Length;
-            int[] answer = new int[idcount];
-
-            List<Users> users = new List<Users>();
-            List<string> list = new List<string>();
-            List<string> reported = new List<string>();
-
-            list.AddRange(report.Distinct().ToList());
-
-            foreach (string id in id_list)
+            Action<int> print = new Action<int>(PrintNumber);
+            int i = 1;
+            while (i <= n)
             {
-                Users user = new Users();
-                user.Id = id;
-                user.ReportUser = new List<string>();
-
-                foreach (string item in list)
-                {
-                    string[] s = item.Split(' ');
-                    string reportid = s[0];
-                    string reportedid = s[1];
-                    if (user.Id == reportid)
-                    {
-                        user.ReportUser.Add(reportedid);
-                    }
-
-                    if (user.Id == reportedid)
-                    {
-                        user.ReportedCount = user.ReportedCount + 1;
-                    }
-                }
-
-                if (user.ReportedCount >= k)
-                {
-                    reported.Add(user.Id);
-                }
-
-                users.Add(user);
+                zeroEvent.WaitOne();
+                print(0);
+                evenEvent.Set();
+                i++;
             }
-
-            for (int i = 0; i < idcount; i++)
-            {
-                Users users1 = users[i];
-
-                int count = 0;
-                foreach(var item in reported)
-                {
-                    if (users1.ReportUser.Exists(x=> x == item))
-                    {
-                        count++;
-                    }
-                }
-
-                answer[i] = count;
-            }
-
-            return answer;
+            oddEvent.Set();
         }
-}
 
-public class Users
-{
-    public string Id { get; set; }
-    public List<string> ReportUser { get; set; } = new List<string>();
-    public int ReportedCount { get; set; }
-}
+        public void Even(object printNumber)
+        {
+            Action<int> print = new Action<int>(PrintNumber);
+            int i = 1;
+            while (i < n)
+            {
+                evenEvent.WaitOne();
+                print(i);
+                i++;
+                zeroEvent.Set();
+            }
+        }
+
+        public void Odd(object printNumber)
+        {
+            Action<int> print = new Action<int>(PrintNumber);
+            oddEvent.WaitOne();
+            print(n);
+        }
+
+        private void PrintNumber(int i)
+        {
+            Console.Write(i);
+        }
+    }    
