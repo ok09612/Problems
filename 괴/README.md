@@ -1,68 +1,46 @@
-# 숫자 문자열과 영단어
-https://programmers.co.kr/learn/courses/30/lessons/81301
+# 2181. Merge Nodes in Between Zeros
+# https://leetcode.com/problems/merge-nodes-in-between-zeros/
 
-```python
-def solution(s):
+```C#
+public class Solution {
+    public ListNode MergeNodes(ListNode head) {
         
-    dict = {}
-    
-    dict["zero"] = 0
-    dict["one"] = 1
-    dict["two"] = 2
-    dict["three"] = 3
-    dict["four"] = 4
-    dict["five"] = 5
-    dict["six"] = 6
-    dict["seven"] = 7
-    dict["eight"] = 8
-    dict["nine"] = 9
-    
-    result = ""
-    word = ""
-    
-    for char in s:
-        if char.isdigit():
-            result += str(char)
-        else:
-            word += char
+        var dummy = new ListNode(0);
+        var result = dummy;
+        
+        var sum = 0;
+        
+        while (head != null)
+        {
+            var val = Convert.ToInt32(head.val);
             
-            if word in dict:
-                result += str(dict[word])
-                word = ""
-    
-    return int(result)
+            if (val > 0) {
+                sum += val;  
+            } else {
+                if (sum > 0)
+                {
+                    result.next = new ListNode(sum);
+                    result = result.next;
+                    
+                }
+                sum = 0;
+            } 
+            
+            head = head.next;
+        }
+        
+        return dummy.next;
+    }
+}
 ```
 
-# 로또의 최고 순위와 최저 순위
-https://programmers.co.kr/learn/courses/30/lessons/77484
+# 43. Multiply Strings
+# https://leetcode.com/problems/multiply-strings/
 
-```python
-def solution(lottos, win_nums):
-    
-    dict = {}
-    
-    dict[6] = 1
-    dict[5] = 2
-    dict[4] = 3
-    dict[3] = 4
-    dict[2] = 5
-    dict[1] = 6
-    dict[0] = 6
-    
-    answer = []
-    max = 0
-    min = 0
-    
-    for lotto in lottos:
-        
-        if lotto == 0:
-            max += 1
-        elif lotto in win_nums:
-            max += 1
-            min += 1
-    
-    answer.append(dict[max])
-    answer.append(dict[min])
-    
-    return answer
+```C#
+public class Solution {
+    public string Multiply(string num1, string num2) {
+        return (BigInteger.Parse(num1) * BigInteger.Parse(num2)).ToString();
+    }
+}
 ```
