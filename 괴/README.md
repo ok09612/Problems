@@ -1,46 +1,13 @@
-# 2181. Merge Nodes in Between Zeros
-# https://leetcode.com/problems/merge-nodes-in-between-zeros/
+# 1910. Remove All Occurrences of a Substring
+# https://leetcode.com/problems/remove-all-occurrences-of-a-substring/
 
-```C#
-public class Solution {
-    public ListNode MergeNodes(ListNode head) {
+```python
+class Solution:
+    def removeOccurrences(self, s: str, part: str) -> str:
         
-        var dummy = new ListNode(0);
-        var result = dummy;
-        
-        var sum = 0;
-        
-        while (head != null)
-        {
-            var val = Convert.ToInt32(head.val);
-            
-            if (val > 0) {
-                sum += val;  
-            } else {
-                if (sum > 0)
-                {
-                    result.next = new ListNode(sum);
-                    result = result.next;
-                    
-                }
-                sum = 0;
-            } 
-            
-            head = head.next;
-        }
-        
-        return dummy.next;
-    }
-}
-```
+        while s.count(part) > 0:
+            # s = s.replace(part,'')
+            s = s[0:s.index(part) + len(part)].replace(part,'') + s[s.index(part) + len(part):]
 
-# 43. Multiply Strings
-# https://leetcode.com/problems/multiply-strings/
-
-```C#
-public class Solution {
-    public string Multiply(string num1, string num2) {
-        return (BigInteger.Parse(num1) * BigInteger.Parse(num2)).ToString();
-    }
-}
+        return s
 ```
