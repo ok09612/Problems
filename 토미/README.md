@@ -1,144 +1,165 @@
 # Problems
 
-https://leetcode.com/problems/number-of-steps-to-reduce-a-number-to-zero/
-
-``` C#
-public class Solution {
-    public int NumberOfSteps(int num) {
-        
-        var count = 0;
-        
-        while(num != 0){
-            count++;
-            if(num % 2 == 1){
-                num -= 1;
-            }
-            else{
-                num /= 2;
-            }            
-        }
-        
-        return count;
-    }
-}
-```
-
-https://leetcode.com/problems/recover-a-tree-from-preorder-traversal/
+https://leetcode.com/problems/merge-k-sorted-lists/
 
 ``` C#
 /**
- * Definition for a binary tree node.
- * public class TreeNode {
+ * Definition for singly-linked list.
+ * public class ListNode {
  *     public int val;
- *     public TreeNode left;
- *     public TreeNode right;
- *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
+ *     public ListNode next;
+ *     public ListNode(int val=0, ListNode next=null) {
  *         this.val = val;
- *         this.left = left;
- *         this.right = right;
+ *         this.next = next;
+ *     }
+ * }
+ */
+
+public class Solution
+{
+	public ListNode MergeKLists(ListNode[] lists)
+	{
+		if (lists.Length < 1)
+		{
+			return null;
+		}
+
+		var notNullIndex = 0;
+
+		foreach (var node in lists)
+		{
+			if (node == null)
+			{
+				notNullIndex++;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		if (notNullIndex >= lists.Length)
+		{
+			return lists[0];
+		}
+
+		var result = lists[notNullIndex];
+
+		for (int i = notNullIndex + 1; i < lists.Length; i++)
+		{
+			if (lists[i] != null)
+			{
+				if (result.val > lists[i].val)
+				{
+					result = Merge(lists[i], result);
+				}
+				else
+				{
+					result = Merge(result, lists[i]);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	private ListNode Merge(ListNode op1, ListNode op2)
+	{
+		var currentOp1 = op1;
+		var currentOp2 = op2;
+
+		while (currentOp2 != null)
+		{
+			if (currentOp1.next == null)
+			{
+				currentOp1.next = currentOp2;
+				break;
+			}
+			else
+			{
+				if (currentOp1.next.val >= currentOp2.val)
+				{
+					var tmpNextOp2 = currentOp2.next;
+					Interleave(currentOp1, currentOp2);
+					currentOp1 = currentOp2;
+					currentOp2 = tmpNextOp2;
+				}
+				else
+				{
+					currentOp1 = currentOp1.next;
+				}
+			}
+		}
+
+		return op1;
+	}
+
+	private void Interleave(ListNode op1, ListNode op2)
+	{
+		var tmp = op1.next;
+		op1.next = op2;
+		op2.next = tmp;
+	}
+}
+```
+
+https://leetcode.com/problems/swap-nodes-in-pairs/
+
+``` C#
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     public int val;
+ *     public ListNode next;
+ *     public ListNode(int val=0, ListNode next=null) {
+ *         this.val = val;
+ *         this.next = next;
  *     }
  * }
  */
 public class Solution
 {
-	public TreeNode RecoverFromPreorder(string traversal)
+	public ListNode SwapPairs(ListNode head)
 	{
-		var stack = new Stack<TreeNode>();
+		var stack = new Stack<ListNode>();
 
-		for (int i = 0; i < traversal.Length; i++)
+		var current = head;
+		var size = 0;
+
+		while (current != null)
 		{
-			var item = traversal[i];
-			
-			//Depth일 경우
-			if (item == '-')
-			{
-				var dashLength = GetDashLength(traversal, i);
-				i += dashLength - 1;
+			stack.Push(current);
+			current = current.next;
+			size++;
+		}
 
-				while (stack.Count > dashLength)
+		var lastNode = head;
+
+		while (stack.Count > 1)
+		{
+			if (stack.Count % 2 == 0)//2 4 6
+			{
+				var back = stack.Pop();
+				var front = stack.Pop();
+
+				var tmpBackNext = back.next;
+				front.next = tmpBackNext;
+				back.next = front;
+
+				lastNode = back;
+
+				if (stack.TryPeek(out var peek))
 				{
-					stack.Pop();
+					peek.next = back;
 				}
-
 			}
-			//숫자일 경우
-			else
+			else//3 5
 			{
-				var numberLength = GetNumberLength(traversal, i);
-				var value = int.Parse(traversal.Substring(i, numberLength));
-				i += numberLength - 1;
-				var newNode = new TreeNode(value);
-
-				if (stack.Count > 0)
-				{
-					var parent = stack.Peek();
-
-					if (parent.left == null)
-					{
-						parent.left = newNode;
-					}
-					else
-					{
-						parent.right = newNode;
-					}
-				}
-
-				stack.Push(newNode);
+				var tail = stack.Pop();
 			}
 		}
 
-		return stack.Last();
-	}
-
-	private int GetNumberLength(string traversal, int startIndex)
-	{
-		var numberLength = 0;
-
-		for (int i = startIndex; i < traversal.Length; i++)
-		{
-			if (traversal[i] != '-')
-			{
-				numberLength++;
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		return numberLength;
-	}
-
-	private int GetDashLength(string traversal, int startIndex)
-	{
-		var dashLength = 0;
-
-		for (int i = startIndex; i < traversal.Length; i++)
-		{
-			if (traversal[i] == '-')
-			{
-				dashLength++;
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		return dashLength;
-	}
-}
-
-public class TreeNode
-{
-	public int val;
-	public TreeNode left;
-	public TreeNode right;
-	public TreeNode(int val = 0, TreeNode left = null, TreeNode right = null)
-	{
-		this.val = val;
-		this.left = left;
-		this.right = right;
+		return lastNode;
 	}
 }
 ```
