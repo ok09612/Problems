@@ -1,165 +1,143 @@
 # Problems
 
-https://leetcode.com/problems/merge-k-sorted-lists/
+https://leetcode.com/problems/rotate-image/
 
 ``` C#
-/**
- * Definition for singly-linked list.
- * public class ListNode {
- *     public int val;
- *     public ListNode next;
- *     public ListNode(int val=0, ListNode next=null) {
- *         this.val = val;
- *         this.next = next;
- *     }
- * }
- */
-
 public class Solution
 {
-	public ListNode MergeKLists(ListNode[] lists)
+	public void Rotate(int[][] matrix)
 	{
-		if (lists.Length < 1)
-		{
-			return null;
-		}
+		var n = matrix.GetLength(0);
+		var size = n - 1;
+		var depthSize = n / 2;
 
-		var notNullIndex = 0;
-
-		foreach (var node in lists)
+		for (int depth = 0; depth < depthSize; depth++)
 		{
-			if (node == null)
+			var endAmount = size - (depth * 2);
+			for (int i = 0; i < endAmount; i++)
 			{
-				notNullIndex++;
-			}
-			else
-			{
-				break;
+				var tmpValue = matrix[depth][depth + i];
+
+				matrix[depth][depth + i] = matrix[size - depth - i][depth];
+				matrix[size - depth - i][depth] = matrix[size - depth][size - depth - i];
+				matrix[size - depth][size - depth - i] = matrix[depth + i][size - depth];
+				matrix[depth + i][size - depth] = tmpValue;
 			}
 		}
+	}
+}
+```
 
-		if (notNullIndex >= lists.Length)
+https://leetcode.com/problems/combination-sum/
+
+``` C#
+public class Solution
+{
+	List<IList<int>> result = new List<IList<int>>();
+
+	public IList<IList<int>> CombinationSum(int[] candidates, int target)
+	{
+		for (int i = 0; i < candidates.Length; i++)
 		{
-			return lists[0];
-		}
-
-		var result = lists[notNullIndex];
-
-		for (int i = notNullIndex + 1; i < lists.Length; i++)
-		{
-			if (lists[i] != null)
-			{
-				if (result.val > lists[i].val)
-				{
-					result = Merge(lists[i], result);
-				}
-				else
-				{
-					result = Merge(result, lists[i]);
-				}
-			}
+			Combinatioin(candidates, new List<int>() { candidates[i] }, i, candidates[i], target);
 		}
 
 		return result;
 	}
 
-	private ListNode Merge(ListNode op1, ListNode op2)
+	private void Combinatioin(int[] candidates, List<int> elements, int index, int sum, int target)
 	{
-		var currentOp1 = op1;
-		var currentOp2 = op2;
-
-		while (currentOp2 != null)
+		if (sum > target)
 		{
-			if (currentOp1.next == null)
+			return;
+		}
+		else if(sum == target)
+		{
+			result.Add(elements);
+			return;
+		}
+		else
+		{
+			for (int i = index; i < candidates.Length; i++)
 			{
-				currentOp1.next = currentOp2;
-				break;
-			}
-			else
-			{
-				if (currentOp1.next.val >= currentOp2.val)
-				{
-					var tmpNextOp2 = currentOp2.next;
-					Interleave(currentOp1, currentOp2);
-					currentOp1 = currentOp2;
-					currentOp2 = tmpNextOp2;
-				}
-				else
-				{
-					currentOp1 = currentOp1.next;
-				}
+				var newElements = new List<int>(elements);
+				newElements.Add(candidates[i]);
+				Combinatioin(candidates, newElements, i, sum + candidates[i], target);
 			}
 		}
-
-		return op1;
-	}
-
-	private void Interleave(ListNode op1, ListNode op2)
-	{
-		var tmp = op1.next;
-		op1.next = op2;
-		op2.next = tmp;
 	}
 }
 ```
 
-https://leetcode.com/problems/swap-nodes-in-pairs/
+https://leetcode.com/problems/divide-two-integers/
 
 ``` C#
-/**
- * Definition for singly-linked list.
- * public class ListNode {
- *     public int val;
- *     public ListNode next;
- *     public ListNode(int val=0, ListNode next=null) {
- *         this.val = val;
- *         this.next = next;
- *     }
- * }
- */
 public class Solution
 {
-	public ListNode SwapPairs(ListNode head)
+	public int Divide(int dividend, int divisor)
 	{
-		var stack = new Stack<ListNode>();
-
-		var current = head;
-		var size = 0;
-
-		while (current != null)
+		if (divisor == -1)
 		{
-			stack.Push(current);
-			current = current.next;
-			size++;
-		}
-
-		var lastNode = head;
-
-		while (stack.Count > 1)
-		{
-			if (stack.Count % 2 == 0)//2 4 6
+			if (dividend == int.MaxValue)
 			{
-				var back = stack.Pop();
-				var front = stack.Pop();
-
-				var tmpBackNext = back.next;
-				front.next = tmpBackNext;
-				back.next = front;
-
-				lastNode = back;
-
-				if (stack.TryPeek(out var peek))
-				{
-					peek.next = back;
-				}
+				return int.MinValue;
 			}
-			else//3 5
+			else if(dividend == int.MinValue)
 			{
-				var tail = stack.Pop();
+				return int.MaxValue;
+			}
+			else
+			{
+				return -dividend;
 			}
 		}
 
-		return lastNode;
+		return dividend / divisor;
+	}
+}
+```
+
+https://leetcode.com/problems/zigzag-conversion/
+
+``` C#
+public class Solution
+{
+	public string Convert(string s, int numRows)
+	{
+		if (numRows == 1)
+		{
+			return s;
+		}
+
+		var result = new StringBuilder(s.Length);
+
+		var rows = new List<StringBuilder>();
+
+		for (int i = 0; i < numRows; i++)
+		{
+			rows.Add(new StringBuilder());
+		}
+
+		var cycleSize = numRows * 2 - 2;
+
+		for (int i = 0; i < s.Length; i++)
+		{
+			var remain = i % cycleSize;
+
+			if (remain < numRows)
+			{
+				rows[remain].Append(s[i]);
+			}
+			else
+			{
+				var startIndex = remain - numRows;
+				rows[numRows - startIndex - 2].Append(s[i]);
+			}
+		}
+
+		rows.ForEach(x => result.Append(x));
+
+		return result.ToString();
 	}
 }
 ```
