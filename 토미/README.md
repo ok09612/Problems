@@ -1,56 +1,80 @@
 # Problems
 
-https://leetcode.com/problems/group-anagrams/
+https://leetcode.com/problems/first-unique-character-in-a-string/
 
 ``` C#
 public class Solution
 {
-	public IList<IList<string>> GroupAnagrams(string[] strs)
-	{
-		var dict = new Dictionary<string, IList<string>>();
+    public int FirstUniqChar(string s)
+    {
+        var increasement = new int[26];
 
-		foreach (var item in strs)
-		{
-			var arr = item.ToCharArray();
-			Array.Sort(arr);
-			var key = new string(arr);
-			if (!dict.TryGetValue(key, out var list))
-			{
-				dict.Add(key, new List<string>());
-			}
+        for (int i = 0; i < s.Length; i++)
+        {
+            increasement[s[i] - 'a']++;
+        }
 
-			dict[key].Add(item);
-		}
+        for (int i = 0; i < s.Length; i++)
+        {
+            if (increasement[s[i] - 'a'] == 1)
+            {
+                return i;
+            }
+        }
 
-		return dict.Values.OrderBy(x => x.Count).ToList();
-	}
+        return -1;
+    }
+}
+
+public class Solution
+{
+    public int FirstUniqChar(string s)
+    {
+        var increasement = new Dictionary<char, int>();
+        var indices = new Dictionary<char, int>();
+
+        for (int i = 0; i < s.Length; i++)
+        {
+            if (!increasement.TryGetValue(s[i], out var value))
+            {
+                increasement.Add(s[i], 0);
+                indices.Add(s[i], i);
+            }
+
+            increasement[s[i]]++;
+        }
+
+        var first = increasement.FirstOrDefault(x => x.Value == 1);
+
+        return first.Key == default(char) ? -1 :indices[first.Key];
+    }
 }
 ```
 
-https://leetcode.com/problems/search-a-2d-matrix/
+https://leetcode.com/problems/excel-sheet-column-title/
 
 ``` C#
 public class Solution
 {
-	public bool SearchMatrix(int[][] matrix, int target)
-	{
-		var m = matrix.Length;
-		var n = matrix[0].Length;
+    public string ConvertToTitle(int columnNumber)
+    {
+        var sb = new StringBuilder();
+        var stack = new Stack<char>();
+        while (columnNumber > 0)
+        {
+            var remain = columnNumber % 26;
+            columnNumber--;
+            columnNumber /= 26;
 
-		for (int i = 0; i < m; i++)
-		{
-			if (matrix[i].Last() >= target)
-			{
-				var index = Array.BinarySearch(matrix[i], target);
+            stack.Push(remain == 0 ? 'Z' : (char)(remain + 64));
+        }
 
-				if (index > -1)
-				{
-					return true;
-				}
-			}
-		}
+        while (stack.Count > 0)
+        {
+            sb.Append(stack.Pop());
+        }
 
-		return false;
-	}
+        return sb.ToString();
+    }
 }
 ```
