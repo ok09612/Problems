@@ -1,57 +1,34 @@
-# Problems (문자열 관련문제 2개)
+# Problems (그래프 및 노드 관련 문제 1개)
 
 
-https://programmers.co.kr/learn/courses/30/lessons/12926
-# 시저 암호 (LV1)
-```javascript
-function solution(s, n) {
-    var answer = '';
-    let string_array = [...s];
-    
-    answer = string_array.map((item, idx, cur) => {
-        if (item == ' ') {
-            return item;
-        }else{
-            let type = '';
-            let item_char_code = item.charCodeAt(0);
-            let convert_char_code = item.charCodeAt(0) + n;
-            
-            if (item_char_code >= 97 && item_char_code <= 122) {
-                type = 1;
-            }
-            
-            if (item_char_code >= 65 && item_char_code <= 90) {
-                type = 2;
-            }
-            
-            if (type == 1 && convert_char_code > 122) {
-                convert_char_code -= 26;
-            }
-            
-            if (type == 2 && convert_char_code > 90) {
-                convert_char_code -= 26;
-            }
-            return String.fromCharCode(convert_char_code);
-        }
-    });
-    
-    
-    return answer.join('');
+https://programmers.co.kr/learn/courses/30/lessons/43165?language=cpp
+# 타겟 넘버 (LV2)
+```cpp
+// 못풀었지만 분석은 끝났다!
+#include <string>
+#include <vector>
+using namespace std;
+
+vector<int> numbers_;
+int target_;
+int answer = 0;
+void dfs(int sum, int depth)
+{
+    if (depth == numbers_.size())
+    {
+        if (sum == target_)
+            ++answer;            
+       return;            
+    }
+    dfs(sum + numbers_[depth], depth + 1);
+    dfs(sum - numbers_[depth], depth + 1);
 }
-```
 
-
-https://programmers.co.kr/learn/courses/30/lessons/12948
-# 핸드폰 번호 가리기 (LV1)
-```javascript
-function solution(phone_number) {
-    var answer = '';
-    answer += phone_number.slice(0, -4).replace(/[0-9]/g, '*');
-    answer += phone_number.slice(-4);
+int solution(vector<int> numbers, int target) {
+    numbers_ = numbers;
+    target_ = target;
+    
+    dfs(0, 0);
     return answer;
-}
-```
-
-
-
+}```
 
