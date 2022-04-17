@@ -1,83 +1,61 @@
-# 1342. Number of Steps to Reduce a Number to Zero
-public int NumberOfSteps(int num)
+# 237. Delete Node in a Linked List
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     public int val;
+ *     public ListNode next;
+ *     
+ *     public ListNode(int x) 
+ *     { 
+ *         val = x; 
+ *     }
+ * }
+ */
+public class Solution {
+    public void DeleteNode(ListNode node) {
+         node.val = node.next.val;
+         node.next = node.next.next;
+    }
+}
+
+
+
+# 897. Increasing Order Search Tree
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left;
+ *     public TreeNode right;
+ *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+public class Solution {
+    public TreeNode IncreasingBST(TreeNode root)
     {
-        int result = 0;
-
-        while (num > 0)
-        {
-            int odd = num % 2;
-            if (odd == 0)
-            {
-                num = num / 2;
-            }
-            else
-            {
-                num = num - odd;
-            }
-            result++;
-        }
-
-        return result;
+        TreeNode result = new TreeNode();
+        TreeNode tmp = result;
+        InOrder(root, tmp);
+        return result.right;
     }
 
-
-# 1116. Print Zero Even Odd
-public class ZeroEvenOdd
+    TreeNode InOrder(TreeNode root, TreeNode tmp)
     {
-        private int n;
-
-        AutoResetEvent zeroEvent = new AutoResetEvent(true);
-        AutoResetEvent evenEvent = new AutoResetEvent(false);
-        AutoResetEvent oddEvent = new AutoResetEvent(false);
-
-        public ZeroEvenOdd(int n)
+        if (root == null)
         {
-            this.n = n;
-            Thread tzero = new Thread(new ParameterizedThreadStart(Zero));
-            Thread teven = new Thread(new ParameterizedThreadStart(Even));
-            Thread teodd = new Thread(new ParameterizedThreadStart(Odd));
-            tzero.Start();
-            teven.Start();
-            teodd.Start();
+            return tmp;
         }
+        tmp = InOrder(root.left, tmp);
+        tmp.right = root;
+        root.left = null;
+        tmp = root;
+        return InOrder(root.right, tmp);
+    }
+}
 
-        // printNumber(x) outputs "x", where x is an integer.
-        public void Zero(object printNumber)
-        {
-            Action<int> print = new Action<int>(PrintNumber);
-            int i = 1;
-            while (i <= n)
-            {
-                zeroEvent.WaitOne();
-                print(0);
-                evenEvent.Set();
-                i++;
-            }
-            oddEvent.Set();
-        }
-
-        public void Even(object printNumber)
-        {
-            Action<int> print = new Action<int>(PrintNumber);
-            int i = 1;
-            while (i < n)
-            {
-                evenEvent.WaitOne();
-                print(i);
-                i++;
-                zeroEvent.Set();
-            }
-        }
-
-        public void Odd(object printNumber)
-        {
-            Action<int> print = new Action<int>(PrintNumber);
-            oddEvent.WaitOne();
-            print(n);
-        }
-
-        private void PrintNumber(int i)
-        {
-            Console.Write(i);
-        }
-    }    
+// 897번은 https://leetcode.com/problems/increasing-order-search-tree/discuss/1955033/Simple-easy-c%2B%2B-solution 를 참고 함.
