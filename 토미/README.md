@@ -1,80 +1,82 @@
 # Problems
 
-https://leetcode.com/problems/first-unique-character-in-a-string/
+https://leetcode.com/problems/trim-a-binary-search-tree/submissions/
 
 ``` C#
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left;
+ *     public TreeNode right;
+ *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
 public class Solution
 {
-    public int FirstUniqChar(string s)
+    public TreeNode TrimBST(TreeNode root, int low, int high)
     {
-        var increasement = new int[26];
-
-        for (int i = 0; i < s.Length; i++)
+        if (root == null)
         {
-            increasement[s[i] - 'a']++;
+            return null;
         }
 
-        for (int i = 0; i < s.Length; i++)
+        if (root.val > high)
         {
-            if (increasement[s[i] - 'a'] == 1)
-            {
-                return i;
-            }
+            return TrimBST(root.left, low, high);
         }
-
-        return -1;
-    }
-}
-
-public class Solution
-{
-    public int FirstUniqChar(string s)
-    {
-        var increasement = new Dictionary<char, int>();
-        var indices = new Dictionary<char, int>();
-
-        for (int i = 0; i < s.Length; i++)
+        else if(root.val < low)
         {
-            if (!increasement.TryGetValue(s[i], out var value))
-            {
-                increasement.Add(s[i], 0);
-                indices.Add(s[i], i);
-            }
-
-            increasement[s[i]]++;
+            return TrimBST(root.right, low, high);
         }
-
-        var first = increasement.FirstOrDefault(x => x.Value == 1);
-
-        return first.Key == default(char) ? -1 :indices[first.Key];
+        else
+        {
+            root.left = TrimBST(root.left, low, high);
+            root.right = TrimBST(root.right, low, high);
+            return root;
+        }
     }
 }
 ```
 
-https://leetcode.com/problems/excel-sheet-column-title/
+https://leetcode.com/problems/binary-search-tree-to-greater-sum-tree/
 
 ``` C#
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left;
+ *     public TreeNode right;
+ *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
 public class Solution
 {
-    public string ConvertToTitle(int columnNumber)
+    public TreeNode BstToGst(TreeNode root)
     {
-        var sb = new StringBuilder();
-        var stack = new Stack<char>();
-        while (columnNumber > 0)
-        {
-            var remain = columnNumber % 26;
-            columnNumber--;
-            columnNumber /= 26;
+        Gst(root, 0);
 
-            stack.Push(remain == 0 ? 'Z' : (char)(remain + 64));
+        return root;
+    }
+
+    private int Gst(TreeNode node, int val)
+    {
+        if (node == null)
+        {
+            return val;
         }
 
-        while (stack.Count > 0)
-        {
-            sb.Append(stack.Pop());
-        }
-
-        return sb.ToString();
+        node.val += Gst(node.right, val);
+        return Gst(node.left, node.val);
     }
 }
 ```
