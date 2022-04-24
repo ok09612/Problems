@@ -1,82 +1,62 @@
 # Problems
 
-https://leetcode.com/problems/trim-a-binary-search-tree/submissions/
+https://leetcode.com/problems/sort-the-matrix-diagonally/
 
 ``` C#
-/**
- * Definition for a binary tree node.
- * public class TreeNode {
- *     public int val;
- *     public TreeNode left;
- *     public TreeNode right;
- *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
- *         this.val = val;
- *         this.left = left;
- *         this.right = right;
- *     }
- * }
- */
+using System.Drawing;
+
 public class Solution
 {
-    public TreeNode TrimBST(TreeNode root, int low, int high)
+    public int[][] DiagonalSort(int[][] mat)
     {
-        if (root == null)
+        var dataPerStartPoint = new Dictionary<Point, List<int>>();
+        var rowSize = mat.Length;
+        var columnSize = mat[0].Length;
+
+        for (int i = 0; i < rowSize; i++)
         {
-            return null;
+            var items = new List<int>();
+            dataPerStartPoint.Add(new Point(i, 0), items);
+            var row = i;
+            var column = 0;
+
+            while (row < rowSize && column < columnSize)
+            {
+                items.Add(mat[row++][column++]);
+            }
+
+            items.Sort();
         }
 
-        if (root.val > high)
+        for (int i = 1; i < columnSize; i++)
         {
-            return TrimBST(root.left, low, high);
-        }
-        else if(root.val < low)
-        {
-            return TrimBST(root.right, low, high);
-        }
-        else
-        {
-            root.left = TrimBST(root.left, low, high);
-            root.right = TrimBST(root.right, low, high);
-            return root;
-        }
-    }
-}
-```
+            var items = new List<int>();
+            dataPerStartPoint.Add(new Point(0, i), items);
+            var row = 0;
+            var column = i;
 
-https://leetcode.com/problems/binary-search-tree-to-greater-sum-tree/
+            while (row < rowSize && column < columnSize)
+            {
+                items.Add(mat[row++][column++]);
+            }
 
-``` C#
-/**
- * Definition for a binary tree node.
- * public class TreeNode {
- *     public int val;
- *     public TreeNode left;
- *     public TreeNode right;
- *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
- *         this.val = val;
- *         this.left = left;
- *         this.right = right;
- *     }
- * }
- */
-public class Solution
-{
-    public TreeNode BstToGst(TreeNode root)
-    {
-        Gst(root, 0);
-
-        return root;
-    }
-
-    private int Gst(TreeNode node, int val)
-    {
-        if (node == null)
-        {
-            return val;
+            items.Sort();
         }
 
-        node.val += Gst(node.right, val);
-        return Gst(node.left, node.val);
+        foreach (var item in dataPerStartPoint)
+        {
+            var row = item.Key.X;
+            var column = item.Key.Y;
+            var data = item.Value;
+            var index = 0;
+
+            while (index < data.Count)
+            {
+                mat[row++][column++] = data[index++];
+            }
+        }
+
+        return mat;
     }
 }
 ```
