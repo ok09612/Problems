@@ -1,62 +1,88 @@
 # Problems
 
-https://leetcode.com/problems/sort-the-matrix-diagonally/
+https://leetcode.com/problems/increasing-order-search-tree/
 
 ``` C#
-using System.Drawing;
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left;
+ *     public TreeNode right;
+ *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+public class Solution {
+    TreeNode currentNode;
+    public TreeNode IncreasingBST(TreeNode root) {
+        currentNode = new TreeNode();
+        var result = currentNode;
+        Search(root);
+                    
+        return result.right;
+    }
+    
+    
+    private void Search(TreeNode node)
+    {
+        if(node == null)
+        {
+            return;
+        }
+        
+        Search(node.left);
+        node.left = null;
+        currentNode.right = node;
+        currentNode = node;
+        
+        Search(node.right);
+    }
+}
+```
 
+https://leetcode.com/problems/trim-a-binary-search-tree/
+
+``` C#
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left;
+ *     public TreeNode right;
+ *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
 public class Solution
 {
-    public int[][] DiagonalSort(int[][] mat)
+    public TreeNode TrimBST(TreeNode root, int low, int high)
     {
-        var dataPerStartPoint = new Dictionary<Point, List<int>>();
-        var rowSize = mat.Length;
-        var columnSize = mat[0].Length;
-
-        for (int i = 0; i < rowSize; i++)
+        if (root == null)
         {
-            var items = new List<int>();
-            dataPerStartPoint.Add(new Point(i, 0), items);
-            var row = i;
-            var column = 0;
-
-            while (row < rowSize && column < columnSize)
-            {
-                items.Add(mat[row++][column++]);
-            }
-
-            items.Sort();
+            return null;
         }
 
-        for (int i = 1; i < columnSize; i++)
+        if (root.val > high)
         {
-            var items = new List<int>();
-            dataPerStartPoint.Add(new Point(0, i), items);
-            var row = 0;
-            var column = i;
-
-            while (row < rowSize && column < columnSize)
-            {
-                items.Add(mat[row++][column++]);
-            }
-
-            items.Sort();
+            return TrimBST(root.left, low, high);
         }
-
-        foreach (var item in dataPerStartPoint)
+        else if(root.val < low)
         {
-            var row = item.Key.X;
-            var column = item.Key.Y;
-            var data = item.Value;
-            var index = 0;
-
-            while (index < data.Count)
-            {
-                mat[row++][column++] = data[index++];
-            }
+            return TrimBST(root.right, low, high);
         }
-
-        return mat;
+        else
+        {
+            root.left = TrimBST(root.left, low, high);
+            root.right = TrimBST(root.right, low, high);
+            return root;
+        }
     }
 }
 ```
