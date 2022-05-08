@@ -1,88 +1,96 @@
 # Problems
 
-https://leetcode.com/problems/increasing-order-search-tree/
+https://leetcode.com/problems/implement-stack-using-queues/
 
 ``` C#
-/**
- * Definition for a binary tree node.
- * public class TreeNode {
- *     public int val;
- *     public TreeNode left;
- *     public TreeNode right;
- *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
- *         this.val = val;
- *         this.left = left;
- *         this.right = right;
- *     }
- * }
- */
-public class Solution {
-    TreeNode currentNode;
-    public TreeNode IncreasingBST(TreeNode root) {
-        currentNode = new TreeNode();
-        var result = currentNode;
-        Search(root);
-                    
-        return result.right;
-    }
-    
-    
-    private void Search(TreeNode node)
+public class MyStack
+{
+    Queue<int> leftQueue = new Queue<int>();
+    Queue<int> rightQueue = new Queue<int>();
+
+    public MyStack()
     {
-        if(node == null)
+
+    }
+
+    public void Push(int x)
+    {
+        rightQueue.Enqueue(x);
+    } 
+
+    public int Pop()
+    {
+        Spin(leftQueue, rightQueue, 1);
+
+        var value = rightQueue.Dequeue();
+
+        Spin(rightQueue, leftQueue, 0);
+
+        return value;
+    }
+
+    public int Top()
+    {
+        Spin(leftQueue, rightQueue, 1);
+
+        var top = rightQueue.Peek();
+
+        Spin(leftQueue, rightQueue, 0);
+        Spin(rightQueue, leftQueue, 0);
+
+        return top;
+    }
+
+    private void Spin(Queue<int> op1 , Queue<int> op2, int remainCount)
+    {
+        while (op2.Count > remainCount)
         {
-            return;
+            op1.Enqueue(op2.Dequeue());
         }
-        
-        Search(node.left);
-        node.left = null;
-        currentNode.right = node;
-        currentNode = node;
-        
-        Search(node.right);
+    }
+
+    public bool Empty()
+    {
+        return rightQueue.Count == 0 ? true : false;
     }
 }
+
 ```
 
-https://leetcode.com/problems/trim-a-binary-search-tree/
+https://leetcode.com/problems/max-number-of-k-sum-pairs/
 
 ``` C#
-/**
- * Definition for a binary tree node.
- * public class TreeNode {
- *     public int val;
- *     public TreeNode left;
- *     public TreeNode right;
- *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
- *         this.val = val;
- *         this.left = left;
- *         this.right = right;
- *     }
- * }
- */
 public class Solution
 {
-    public TreeNode TrimBST(TreeNode root, int low, int high)
+    public int MaxOperations(int[] nums, int k)
     {
-        if (root == null)
+        var result = 0;
+        Array.Sort(nums);
+
+        var left = 0;
+        var right = nums.Length - 1;
+
+        while (right > left)
         {
-            return null;
+            var sum = nums[right] + nums[left];
+
+            if (sum == k)
+            {
+                result++;
+                right--;
+                left++;
+            }
+            else if(sum > k)
+            {
+                right--;
+            }
+            else
+            {
+                left++;
+            }
         }
 
-        if (root.val > high)
-        {
-            return TrimBST(root.left, low, high);
-        }
-        else if(root.val < low)
-        {
-            return TrimBST(root.right, low, high);
-        }
-        else
-        {
-            root.left = TrimBST(root.left, low, high);
-            root.right = TrimBST(root.right, low, high);
-            return root;
-        }
+        return result;
     }
 }
 ```
