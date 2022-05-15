@@ -1,96 +1,156 @@
 # Problems
 
-https://leetcode.com/problems/implement-stack-using-queues/
+https://leetcode.com/problems/deepest-leaves-sum/
 
 ``` C#
-public class MyStack
-{
-    Queue<int> leftQueue = new Queue<int>();
-    Queue<int> rightQueue = new Queue<int>();
-
-    public MyStack()
-    {
-
-    }
-
-    public void Push(int x)
-    {
-        rightQueue.Enqueue(x);
-    } 
-
-    public int Pop()
-    {
-        Spin(leftQueue, rightQueue, 1);
-
-        var value = rightQueue.Dequeue();
-
-        Spin(rightQueue, leftQueue, 0);
-
-        return value;
-    }
-
-    public int Top()
-    {
-        Spin(leftQueue, rightQueue, 1);
-
-        var top = rightQueue.Peek();
-
-        Spin(leftQueue, rightQueue, 0);
-        Spin(rightQueue, leftQueue, 0);
-
-        return top;
-    }
-
-    private void Spin(Queue<int> op1 , Queue<int> op2, int remainCount)
-    {
-        while (op2.Count > remainCount)
-        {
-            op1.Enqueue(op2.Dequeue());
-        }
-    }
-
-    public bool Empty()
-    {
-        return rightQueue.Count == 0 ? true : false;
-    }
-}
-
-```
-
-https://leetcode.com/problems/max-number-of-k-sum-pairs/
-
-``` C#
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left;
+ *     public TreeNode right;
+ *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
 public class Solution
 {
-    public int MaxOperations(int[] nums, int k)
+	public int DeepestLeavesSum(TreeNode root)
+	{
+		var deepestIndex = 0;
+
+		SetDeepestIndex(root, ref deepestIndex, 0);
+
+		var sum = 0;
+
+		SumDeepestValues(root, ref sum, 0, deepestIndex);
+
+		return sum;
+	}
+
+	private void SumDeepestValues(TreeNode node, ref int sum, int currentIndex, int deepestIndex)
+	{
+		if (node == null)
+		{
+			return;
+		}
+
+		if (currentIndex == deepestIndex)
+		{
+			sum += node.val;
+
+			return;
+		}
+
+		if (currentIndex < deepestIndex)
+		{
+			SumDeepestValues(node.left, ref sum, currentIndex + 1, deepestIndex);
+			SumDeepestValues(node.right, ref sum, currentIndex + 1, deepestIndex);
+		}
+
+		return;
+	}
+
+	private void SetDeepestIndex(TreeNode node, ref int deepestIndex, int currentIndex)
+	{
+		if (deepestIndex < currentIndex)
+		{
+			deepestIndex = currentIndex;
+		}
+
+		if (node.left != null)
+		{
+			SetDeepestIndex(node.left, ref deepestIndex, currentIndex + 1);
+		}
+
+		if (node.right != null)
+		{
+			SetDeepestIndex(node.right, ref deepestIndex, currentIndex + 1);
+		}
+	}
+}
+```
+
+https://leetcode.com/problems/populating-next-right-pointers-in-each-node-ii/
+
+``` C#
+/*
+// Definition for a Node.
+public class Node {
+    public int val;
+    public Node left;
+    public Node right;
+    public Node next;
+
+    public Node() {}
+
+    public Node(int _val) {
+        val = _val;
+    }
+
+    public Node(int _val, Node _left, Node _right, Node _next) {
+        val = _val;
+        left = _left;
+        right = _right;
+        next = _next;
+    }
+}
+*/
+public class Solution
+{
+    public Node Connect(Node root)
     {
-        var result = 0;
-        Array.Sort(nums);
-
-        var left = 0;
-        var right = nums.Length - 1;
-
-        while (right > left)
+        if(root is null)
         {
-            var sum = nums[right] + nums[left];
+            return root;
+        }
+        
+        var result = root;
+        var queue = new Queue<Node>();
+        queue.Enqueue(root);
 
-            if (sum == k)
+        Add(queue);
+
+        return result;
+    }
+
+    private void Add(Queue<Node> queue)
+    {
+        var count = queue.Count;
+
+        if (count == 0)
+        {
+            return;
+        }
+
+        var frontNode = default(Node);
+
+        while (count-- > 0)
+        {
+            var node = queue.Dequeue();
+
+            if (frontNode is not null)
             {
-                result++;
-                right--;
-                left++;
+                frontNode.next = node;
             }
-            else if(sum > k)
+
+            frontNode = node;
+
+            if (node.left is not null)
             {
-                right--;
+                queue.Enqueue(node.left);
             }
-            else
+
+            if (node.right is not null)
             {
-                left++;
+                queue.Enqueue(node.right);
             }
         }
 
-        return result;
+        Add(queue);
     }
 }
 ```
