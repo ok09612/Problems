@@ -18,27 +18,8 @@ def solution(n):
         fibo_t1 = fibo_t2
     answer = fibo_t2%1234567
     return answer
-    '''
-    
-    
-    
-    https://programmers.co.kr/learn/courses/30/lessons/12941
-    최소값 만들기
-    
-    '''
-    python
-    
-    
-    def solution(A,B):
-    answer = 0
-    #최소값을 구하려면 A의 최소값들 * B의 최대값순
-    A.sort()
-    B.sort(reverse = True)
-    
-    #간단하게 각 원소들 뽑아서 곱해주면 끝
-    #이게 왜 Level2?
-    for i, j in zip(A,B):
-        answer += i*j
 
-    return answer
-    '''
+    
+    
+    
+  '''
